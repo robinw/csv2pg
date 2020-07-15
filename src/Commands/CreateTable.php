@@ -15,7 +15,7 @@ class CreateTable extends Command
 
     public function execute(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS " . self::DB_TABLE_NAME . " (
+        $sql = "CREATE TABLE IF NOT EXISTS " . DB_TABLE_NAME . " (
             id SERIAL PRIMARY KEY,
             name varchar(256),
             surname varchar(256),
