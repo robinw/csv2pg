@@ -27,7 +27,6 @@ class CommandFactory
             $command = new Help();
         }
         else if (array_key_exists(self::CREATE_TABLE_COMMAND, $options)) {
-
             try {
                 $db = $this->getDb($options);
             } catch (PDOException $e) {
@@ -65,7 +64,6 @@ class CommandFactory
         $dbHost = array_key_exists(self::DB_HOST_OPTION, $options) ? $options[self::DB_HOST_OPTION] : null;
 
         $dsn = DB_TYPE . ':dbname=' . DB_NAME . ';host=' . $dbHost;
-        $db = null;
 
         return new PDO($dsn, $dbUser, $dbPwd);
     }
