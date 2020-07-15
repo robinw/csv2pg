@@ -20,7 +20,12 @@ $long_options = [
 
 $options = getopt($short_options, $long_options);
 
-$command = (new CommandFactory())->getCommand($options);
+try {
+    $command = (new CommandFactory())->getCommand($options);
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+
 if ($command instanceof Command) {
     $command->execute();
 }

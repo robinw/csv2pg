@@ -17,9 +17,9 @@ class CreateTable extends Command
     {
         $sql = "CREATE TABLE IF NOT EXISTS " . DB_TABLE_NAME . " (
             id SERIAL PRIMARY KEY,
-            name varchar(256),
-            surname varchar(256),
-            email varchar(256) UNIQUE)";
+            " . DB_FIELD_NAME . " varchar(256),
+            " . DB_FIELD_SURNAME . " varchar(256),
+            " . DB_FIELD_EMAIL . " varchar(256) UNIQUE)";
         $result = $this->db->query($sql);
     }
 }

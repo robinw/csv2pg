@@ -3,6 +3,7 @@
 namespace Commands;
 
 
+use Exceptions\InvalidFileException;
 use PDO;
 use PDOException;
 
@@ -26,22 +27,43 @@ class CommandFactory
             $command = new Help();
         }
         else if (array_key_exists(self::CREATE_TABLE_COMMAND, $options)) {
-            $dbUser = array_key_exists(self::DB_USER_OPTION, $options) ? $options[self::DB_USER_OPTION] : null;
-            $dbPwd = array_key_exists(self::DB_PASSWORD_OPTION, $options) ? $options[self::DB_PASSWORD_OPTION] : null;
-            $dbHost = array_key_exists(self::DB_HOST_OPTION, $options) ? $options[self::DB_HOST_OPTION] : null;
-
-            $dsn = DB_TYPE . ':dbname=' . DB_NAME . ';host=' . $dbHost;
-            $db = null;
 
             try {
-                $db = new PDO($dsn, $dbUser, $dbPwd);
+                $db = $this->getDb($options);
             } catch (PDOException $e) {
                 throw $e;
             }
 
             $command = new CreateTable($db);
         }
+        else if (array_key_exists(self::FILE_COMMAND, $options)) {
+            $fileName = $options[self::FILE_COMMAND];
+
+            if (!file_exists($fileName)) {
+                throw new InvalidFileException("File {$fileName} does not exist or is not readable.");
+            }
+
+            try {
+                $db = $this->getDb($options);
+            } catch (PDOException $e) {
+                throw $e;
+            }
+
+            $command = new ImportCsv($db, $fileName);
+        }
 
         return $command;
+    }
+
+    private function getDb($options): PDO
+    {
+        $dbUser = array_key_exists(self::DB_USER_OPTION, $options) ? $options[self::DB_USER_OPTION] : null;
+        $dbPwd = array_key_exists(self::DB_PASSWORD_OPTION, $options) ? $options[self::DB_PASSWORD_OPTION] : null;
+        $dbHost = array_key_exists(self::DB_HOST_OPTION, $options) ? $options[self::DB_HOST_OPTION] : null;
+
+        $dsn = DB_TYPE . ':dbname=' . DB_NAME . ';host=' . $dbHost;
+        $db = null;
+
+        return new PDO($dsn, $dbUser, $dbPwd);
     }
 }
