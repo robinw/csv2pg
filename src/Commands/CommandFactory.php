@@ -50,6 +50,9 @@ class CommandFactory
             }
 
             $command = new ImportCsv($db, $fileName);
+            if (array_key_exists(self::DRY_RUN_COMMAND, $options)) {
+                $command->setIsDryRun(true);
+            }
         }
 
         return $command;

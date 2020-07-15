@@ -17,10 +17,18 @@ class ImportCsv extends Command
     private $csvFile;
     private $skipFirstLine = true;
 
+    private $isDryRun = false;
+
+
     public function __construct(\PDO $db, string $csvFile)
     {
         $this->db = $db;
         $this->csvFile = $csvFile;
+    }
+
+    public function setIsDryRun(bool $isDryRun)
+    {
+        $this->isDryRun = $isDryRun;
     }
 
     public function execute(): void
@@ -56,16 +64,18 @@ class ImportCsv extends Command
                 continue;
             }
 
-            $result = $stmt->execute(
-                array(
-                    ':name' => $this->decorateName($name),
-                    ':surname' => $this->decorateName($surname),
-                    ':email' => $this->decorateEmail($email)
-                )
-            );
+            if (!$this->isDryRun) {
+                $result = $stmt->execute(
+                    array(
+                        ':name' => $this->decorateName($name),
+                        ':surname' => $this->decorateName($surname),
+                        ':email' => $this->decorateEmail($email)
+                    )
+                );
 
-            if (false === $result) {
-                $this->errors[] = "Failed inserting entry in line " . ($i + 1) . ": Error " . implode(" - ", $stmt->errorInfo());
+                if (false === $result) {
+                    $this->errors[] = "Failed inserting entry in line " . ($i + 1) . ": Error " . implode(" - ", $stmt->errorInfo());
+                }
             }
         }
 
