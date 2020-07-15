@@ -1,5 +1,6 @@
 <?php
 
+use Commands\CreateTable;
 use Commands\Help;
 
 require_once "../autoload.php";
@@ -31,4 +32,25 @@ $options = getopt($short_options, $long_options);
 if (array_key_exists(HELP_COMMAND, $options)) {
     $helpCommand = new Help();
     $helpCommand->execute();
+}
+else if (array_key_exists(CREATE_TABLE_COMMAND, $options)) {
+    $dbUser = array_key_exists(DB_USER_OPTION, $options) ? $options[DB_USER_OPTION] : null;
+    $dbPwd = array_key_exists(DB_PASSWORD_OPTION, $options) ? $options[DB_PASSWORD_OPTION] : null;
+    $dbHost = array_key_exists(DB_HOST_OPTION, $options) ? $options[DB_HOST_OPTION] : null;
+
+    print_r($options);
+    $dsn = 'mysql:dbname=csv2pg;host=' . $dbHost;
+    $db = null;
+
+    try {
+        $db = new PDO($dsn, $dbUser, $dbPwd);
+    } catch (PDOException $e) {
+        echo "Connection failed: " . $e->getMessage();
+    }
+
+    $createTableCommand = new CreateTable($db);
+    try {
+        $createTableCommand->execute();
+    } catch (Exception $e) {
+    }
 }
