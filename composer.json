@@ -10,7 +10,8 @@
     }
   ],
   "require": {
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "ext-pgsql": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^7"
@@ -18,8 +19,7 @@
   "autoload": {
     "psr-4": {
       "Commands\\": "src/Commands",
-      "Models\\": "src/Models",
-      "Models\\Fields\\":  "src/Models/Fields"
+      "Exceptions\\": "src/Exceptions"
     }
   }
 }

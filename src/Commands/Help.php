@@ -6,7 +6,7 @@ namespace Commands;
 
 class Help extends Command
 {
-    const USAGE = <<<USAGE
+    public const USAGE = <<<USAGE
 Accepted arguments:
 • --file [csv file name] – this is the name of the CSV to be parsed
 • --create_table – this will cause the PostgreSQL users table to be built (and no further action will be taken)

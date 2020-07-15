@@ -31,6 +31,11 @@ class ImportCsv extends Command
         $this->isDryRun = $isDryRun;
     }
 
+    public function getIsDryRun(): bool
+    {
+        return $this->isDryRun;
+    }
+
     public function execute(): void
     {
         $fp = fopen($this->csvFile, "r");

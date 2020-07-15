@@ -31,7 +31,7 @@ if ($command instanceof Command) {
 
     if ($command->hasError()) {
         foreach ($command->getErrors() as $error) {
-            echo $error . "\n";
+            echo $error . PHP_EOL;
         }
     }
 }
