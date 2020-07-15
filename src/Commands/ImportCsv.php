@@ -43,22 +43,76 @@ class ImportCsv extends Command
             }
 
             if (self::NUM_COLS !== count($row)) {
-                echo "Invalid entry in line " . ($i + 1). ": wrong number of fields.";
+                $this->errors[] = "Invalid entry in line " . ($i + 1). ": Wrong number of fields.";
+                continue;
             }
 
-            $name = $row[self::COL_NUM_FOR_NAME];
-            $surname = $row[self::COL_NUM_FOR_SURNAME];
-            $email = $row[self::COL_NUM_FOR_EMAIL];
+            $name = trim($row[self::COL_NUM_FOR_NAME]);
+            $surname = trim($row[self::COL_NUM_FOR_SURNAME]);
+            $email = trim($row[self::COL_NUM_FOR_EMAIL]);
 
-            $stmt->execute(
+            if (!$this->isValidEmail($email)) {
+                $this->errors[] = "Invalid entry in line " . ($i + 1) . ": Invalid email: {$email}.";
+                continue;
+            }
+
+            $result = $stmt->execute(
                 array(
-                    ':name' => $name,
-                    ':surname' => $surname,
-                    ':email' => $email
+                    ':name' => $this->decorateName($name),
+                    ':surname' => $this->decorateName($surname),
+                    ':email' => $this->decorateEmail($email)
                 )
             );
+
+            if (false === $result) {
+                $this->errors[] = "Failed inserting entry in line " . ($i + 1) . ": Error " . implode(" - ", $stmt->errorInfo());
+            }
         }
 
         fclose ($fp);
+    }
+
+    private function isValidEmail(string $email): bool
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    /**
+     *
+     * Credit: https://www.media-division.com/correct-name-capitalization-in-php/
+     * @param string $name
+     * @return string
+     */
+    private function decorateName(string $name): string
+    {
+        $wordSplitters = array(' ', '-', "O'", "L'", "D'", 'St.', 'Mc');
+        $lowercaseExceptions = array('the', 'van', 'den', 'von', 'und', 'der', 'de', 'da', 'of', 'and', "l'", "d'");
+        $uppercaseExceptions = array('III', 'IV', 'VI', 'VII', 'VIII', 'IX');
+
+        $decoratedName = strtolower($name);
+        foreach ($wordSplitters as $delim) {
+            $words = explode($delim, $decoratedName);
+            $newWords = array();
+            foreach ($words as $w) {
+                if (in_array(strtoupper($w), $uppercaseExceptions)) {
+                    $newWords[] = strtoupper($w);
+                } else if (!in_array($w, $lowercaseExceptions)) {
+                    $newWords[] = ucfirst($w);
+                }
+            }
+
+            if (in_array(strtolower($delim), $lowercaseExceptions)) {
+                $delim = strtolower($delim);
+            }
+
+            $decoratedName = join($delim, $newWords);
+        }
+
+        return $decoratedName;
+    }
+
+    private function decorateEmail(string $email): string
+    {
+        return strtolower($email);
     }
 }

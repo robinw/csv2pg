@@ -28,4 +28,10 @@ try {
 
 if ($command instanceof Command) {
     $command->execute();
+
+    if ($command->hasError()) {
+        foreach ($command->getErrors() as $error) {
+            echo $error . "\n";
+        }
+    }
 }
