@@ -6,6 +6,9 @@ namespace Commands;
 
 class Help extends Command
 {
+    /**
+     * The text to output as help
+     */
     public const USAGE = <<<USAGE
 Accepted arguments:
 • --file [csv file name] – this is the name of the CSV to be parsed
@@ -17,8 +20,12 @@ Accepted arguments:
 • --help – Output this help message.
 USAGE;
 
+    /**
+     * Executes the help command
+     */
     public function execute(): void
     {
+        // Simply output the usage
         echo self::USAGE;
     }
 }

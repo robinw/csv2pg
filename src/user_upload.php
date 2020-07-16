@@ -7,6 +7,7 @@ require_once "../autoload.php";
 require_once "config.php";
 
 
+// List of options user can specify
 $short_options =
     CommandFactory::DB_USER_OPTION . "::" .
     CommandFactory::DB_PASSWORD_OPTION . "::" .
@@ -20,12 +21,14 @@ $long_options = [
 
 $options = getopt($short_options, $long_options);
 
+// Get the corresponding Command object for the requested action
 try {
     $command = (new CommandFactory())->getCommand($options);
 } catch (Exception $e) {
     echo $e->getMessage();
 }
 
+// Execute the command
 if ($command instanceof Command) {
     $command->execute();
 
@@ -34,4 +37,6 @@ if ($command instanceof Command) {
             echo $error . PHP_EOL;
         }
     }
+} else {
+    echo "Invalid command. " . PHP_EOL;
 }
